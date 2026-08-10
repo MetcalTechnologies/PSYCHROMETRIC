@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psychrometric Calculator — Metcal Technologies</title>
+<meta name="theme-color" content="#144A81">
+<style>
+:root{--navy:#0f2942;--blue:#1a5f9e;--accent:#2f8fd0;--brand:#144A81;--bg:#f4f7fa;--card:#fff;--border:#d9e2ec;--text:#1c2b39;--muted:#5b7083;--orange:#e8792a;--warn:#b45309;--warnbg:#fffbeb;--ok:#166534;--okbg:#f0fdf4;--bad:#b91c1c;--badbg:#fef2f2}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);padding:24px}
+.wrap{max-width:1000px;margin:0 auto}.brand{font-size:22px;font-weight:800;color:var(--brand);margin-bottom:14px}
+.brand a{color:var(--muted);font-size:13px;font-weight:600;text-decoration:none;margin-left:12px}.brand a:hover{text-decoration:underline}
+header h1{font-size:21px;margin:0 0 4px;color:var(--navy)}header p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.55}
+.tabs{display:flex;gap:6px;margin:18px 0 0;flex-wrap:wrap}
+.tab{background:#fff;border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.tab[aria-selected="true"]{color:var(--navy);background:var(--card);box-shadow:0 -2px 0 var(--blue) inset}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:18px;box-shadow:0 1px 2px rgba(15,41,66,.04)}
+.tabs+.card{border-top-left-radius:0}.card h2{font-size:14px;margin:0 0 14px;color:var(--navy)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}.field{flex:1;min-width:135px}
+label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;background:#fff;color:var(--text)}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.out{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.kpi{flex:1;min-width:150px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.kpi .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.kpi .v{font-size:24px;font-weight:800;color:var(--navy);margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.work{margin-top:14px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.7;color:var(--navy);overflow-x:auto;white-space:pre}
+table{width:100%;border-collapse:collapse;min-width:520px}.tablewrap{overflow-x:auto}
+th,td{padding:9px 10px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+td.n{font-variant-numeric:tabular-nums}td.b{font-weight:700;color:var(--navy)}td input,td select{padding:7px 8px;font-size:13.5px}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px}
+.pass{background:var(--okbg);color:var(--ok)}.fail{background:var(--badbg);color:var(--bad)}.cond{background:var(--warnbg);color:var(--warn)}
+.warnbox{background:var(--warnbg);border:1px solid #fde68a;color:var(--warn);padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.55;margin-top:14px}
+.okbox{background:var(--okbg);border:1px solid #bbf7d0;color:var(--ok);padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.55;margin-top:14px}
+.note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6}.hide{display:none}
+footer{font-size:11px;color:var(--muted);text-align:center;margin-top:26px;line-height:1.6}
+  .brand img{height:26px;width:auto;vertical-align:middle;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="../logo.png" alt="Metcal"><a href="../">&larr; All tools</a></div>
+  <header><h1>Psychrometric Calculator</h1>
+    <p>Moist air properties from dry bulb plus one other measured property. Follows the ASHRAE Handbook &mdash; Fundamentals.</p></header>
+  <div class="card">
+    <h2>Measured</h2>
+    <div class="row" style="margin-bottom:12px;">
+      <div class="field"><label for="db">Dry bulb temperature (&deg;C)</label><input type="number" step="any" id="db" value="25.90" oninput="calc()"></div>
+      <div class="field"><label for="known">Second known property</label>
+        <select id="known" onchange="calc()">
+          <option value="wb">Wet bulb temperature</option>
+          <option value="rh">Relative humidity</option>
+          <option value="dp" selected>Dew point temperature</option>
+        </select></div>
+      <div class="field"><label for="val" id="valLbl">Dew point temperature (&deg;C)</label><input type="number" step="any" id="val" value="20.00" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field" style="max-width:280px;"><label for="pres">Barometric pressure (kPa)</label><input type="number" step="any" id="pres" value="101.325" oninput="calc()"></div>
+    </div>
+    <div id="warn"></div>
+  </div>
+  <div class="card">
+    <h2>Air properties</h2>
+    <div class="tablewrap"><table><thead><tr><th>Property</th><th>Value</th><th>Unit</th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p class="note">Wet bulb here is the thermodynamic wet bulb temperature. Humidity ratio, specific volume and enthalpy are all per kilogram of <em>dry</em> air, which is the convention in the ASHRAE tables and on a psychrometric chart. Barometric pressure matters: at 101.325 kPa the values match sea level, and a chamber at altitude or a different site pressure will shift the humidity ratio and dew point.</p>
+  </div>
+  <footer>
+    Saturation vapour pressure from ASHRAE Fundamentals, over ice below 0 &deg;C and over water above.<br>
+    Reference tool only &mdash; confirm against the instrument and the applicable method.<br>
+    Metcal Technologies (M) Sdn. Bhd.<br>Tool version 1.0 &middot; updated 7 August 2026.
+  </footer>
+</div>
+<script>
+/* Saturation vapour pressure, Pa. ASHRAE Fundamentals: over ice below 0 C, over water above. */
+function pws(t){var T=t+273.15,l;
+ if(t<0){l=-5.6745359e3/T+6.3925247-9.677843e-3*T+6.2215701e-7*T*T+2.0747825e-9*T*T*T-9.484024e-13*T*T*T*T+4.1635019*Math.log(T);}
+ else{l=-5.8002206e3/T+1.3914993-4.8640239e-2*T+4.1764768e-5*T*T-1.4452093e-8*T*T*T+6.5459673*Math.log(T);}
+ return Math.exp(l);}
+function WfromPw(pw,p){return 0.621945*pw/(p-pw);}
+function PwfromW(W,p){return p*W/(0.621945+W);}
+function WfromWB(t,tw,p){var Ws=WfromPw(pws(tw),p);
+ if(tw>=0){return ((2501-2.326*tw)*Ws-1.006*(t-tw))/(2501+1.86*t-4.186*tw);}
+ return ((2830-0.24*tw)*Ws-1.006*(t-tw))/(2830+1.86*t-2.1*tw);}
+function dewPoint(W,p){var pw=PwfromW(W,p);if(!(pw>0))return NaN;var a=-100,b=200;for(var i=0;i<200;i++){var m=(a+b)/2;if(pws(m)<pw)a=m;else b=m;}return (a+b)/2;}
+function wetBulb(t,W,p){var a=-100,b=t;for(var i=0;i<200;i++){var m=(a+b)/2;if(WfromWB(t,m,p)<W)a=m;else b=m;}return (a+b)/2;}
+function enthalpy(t,W){return 1.006*t+W*(2501+1.86*t);}
+function volume(t,W,p){return 0.287042*(t+273.15)*(1+1.607858*W)/(p/1000);}
+function num(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?null:v;}
+function f(v,d){if(v===null||v===undefined||!isFinite(v))return "\u2014";var s=v.toFixed(d);return s;}
+function row(n,v,u){return "<tr><td>"+n+"</td><td class=\"n b\">"+v+"</td><td class=\"n\" style=\"color:var(--muted)\">"+u+"</td></tr>";}
+function calc(){
+  var t=num("db"),k=document.getElementById("known").value,v=num("val"),pk=num("pres");
+  var L={wb:"Wet bulb temperature (\u00b0C)",rh:"Relative humidity (%)",dp:"Dew point temperature (\u00b0C)"};
+  document.getElementById("valLbl").textContent=L[k];
+  var R=document.getElementById("rows"),W=document.getElementById("warn");
+  if(t===null||v===null||pk===null||pk<=0){R.innerHTML="";W.innerHTML="<div class=\"warnbox\">Enter the dry bulb, the second property and a positive pressure.</div>";return;}
+  var p=pk*1000,w=null,msg="";
+  if(k==="dp"){ if(v>t){msg="Dew point cannot exceed the dry bulb temperature \u2014 air cannot hold more moisture than saturation.";} w=WfromPw(pws(v),p); }
+  else if(k==="rh"){ if(v<0||v>100){msg="Relative humidity must be between 0 and 100 %.";} w=WfromPw(Math.max(0,Math.min(100,v))/100*pws(t),p); }
+  else { if(v>t){msg="Wet bulb cannot exceed the dry bulb temperature.";} w=WfromWB(t,v,p); }
+  if(msg){R.innerHTML="";W.innerHTML="<div class=\"warnbox\"><strong>Check the inputs.</strong> "+msg+"</div>";return;}
+  if(!(w>0)){R.innerHTML="";W.innerHTML="<div class=\"warnbox\"><strong>That combination gives a negative humidity ratio,</strong> which means the air would be drier than absolutely dry. Check the wet bulb or the pressure.</div>";return;}
+  var pw=PwfromW(w,p),ps=pws(t),rh=pw/ps*100;
+  var dp=dewPoint(w,p),wb=(k==="wb")?v:wetBulb(t,w,p);
+  W.innerHTML=(rh>100.5)?"<div class=\"warnbox\"><strong>This is supersaturated (RH above 100 %).</strong> Fog or condensation, not a stable air state \u2014 check the readings.</div>":"";
+  R.innerHTML=row("Dry bulb temperature",f(t,2),"\u00b0C")
+   +row("Wet bulb temperature",f(wb,2),"\u00b0C")
+   +row("Relative humidity",f(rh,2),"%")
+   +row("Humidity ratio",f(w,5),"kg/kg dry air")
+   +row("Dew point temperature",f(dp,2),"\u00b0C")
+   +row("Specific volume",f(volume(t,w,p),4),"m\u00b3/kg dry air")
+   +row("Specific enthalpy",f(enthalpy(t,w),2),"kJ/kg dry air")
+   +row("Vapour pressure",f(pw,1),"Pa")
+   +row("Saturation vapour pressure",f(ps,1),"Pa");
+}
+calc();
+</script>
+</body>
+</html>
